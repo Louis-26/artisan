@@ -1192,7 +1192,7 @@ def _hard_pressure_threshold_for_model(model_id: str) -> int | None:
     override = _env_int_or_none("OPENAI_HARD_PRESSURE_THRESHOLD_TOKENS")
     if override is not None:
         return override
-    if model_id in {"gpt-5.5", "gpt-5.5-2026-04-23", "gpt-5.6-sol", "gpt-6-astra"}:
+    if model_id in {"gpt-5.5", "gpt-5.5-2026-04-23", "gpt-5.6-sol","gpt-6.1-sol", "gpt-6-astra"}:
         return DEFAULT_OPENAI_HARD_PRESSURE_TOKENS
     return None
 

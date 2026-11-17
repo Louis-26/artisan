@@ -38,6 +38,9 @@ DEFAULT_ANTHROPIC_OUTPUT_SAFETY_TOKENS = 1_024
 
 
 ANTHROPIC_COMPACTION_BETA = "compact-2026-01-12"
+ANTHROPIC_THINKING_BINDING_BETA = "thinking-binding-controls-2026-08-01"
+# Models whose thinking blocks are bound to the exact conversation prefix ("preserved thinking").
+_PRESERVED_THINKING_MODELS = ("claude-opus-5-5",)
 DEFAULT_ANTHROPIC_COMPACTION_TRIGGER_TOKENS = 110_000
 
 
@@ -51,6 +54,7 @@ ANTHROPIC_PROMPT_CACHE_FIRST_MESSAGE_MIN_CHARS_ENV = (
 
 DEFAULT_ANTHROPIC_PROMPT_CACHE_FIRST_MESSAGE_MIN_CHARS = 2_000
 _ADAPTIVE_THINKING_MODELS = (
+    "claude-opus-5-5",
     "claude-mythos-preview",
     "claude-opus-4-8",
     "claude-opus-4-7",
@@ -235,11 +239,14 @@ class AnthropicLLM:
     async def _create_message(self, payload: dict[str, Any]) -> Any:
         if self._client is None:
             raise RuntimeError("Anthropic transport is unavailable in dry_run mode")
+        betas = []
+        if self.enable_compaction:
+            betas.append(ANTHROPIC_COMPACTION_BETA)
+        if "block_binding" in (payload.get("thinking") or {}):
+            betas.append(ANTHROPIC_THINKING_BINDING_BETA)
         try:
-            if self.enable_compaction:
-                return await self._client.beta.messages.create(
-                    **payload, betas=[ANTHROPIC_COMPACTION_BETA]
-                )
+            if betas:
+                return await self._client.beta.messages.create(**payload, betas=betas)
             return await self._client.messages.create(**payload)
         except Exception as exc:
             normalized = _api_error_from_sdk_exception(exc)
@@ -756,6 +763,13 @@ def _thinking_config_for_model(model_id: str, thinking_level: str) -> dict[str, 
     if level in {"0", "false", "none", "off", "disabled"}:
         return None
     model_norm = model_id.strip().lower()
+    if model_norm.startswith(_PRESERVED_THINKING_MODELS):
+        # The pipeline rewrites earlier history (e.g. prunes old renders). On preserved-thinking
+        # models that edit would turn a replayed thinking block into a 400; drop the block instead.
+        return {
+            "type": "adaptive",
+            "block_binding": {"prefix_mismatch_behavior": "drop_block"},
+        }
     if model_norm.startswith(_ADAPTIVE_THINKING_MODELS):
         return {"type": "adaptive"}
     return None

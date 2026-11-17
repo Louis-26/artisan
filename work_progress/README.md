@@ -1,0 +1,3 @@
+- github repo link: https://github.com/Louis-26/artisan
+- slide link: https://docs.google.com/presentation/d/1FUZWJ2Lc5MLqF51dtDFLdMW3yvva-PXEqL0Kj7Mi1_4/edit?usp=sharing
+- paper draft link: /

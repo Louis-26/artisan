@@ -24,6 +24,7 @@ DEFAULT_IMAGE_TOOL_MODEL = "gpt-image-2.5-sunburst"
 _TEXT_ROLES = frozenset({"text", "compaction", "image_envelope"})
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
     "gpt-6-astra": _TEXT_ROLES,
+    "gpt-6.1-sol": _TEXT_ROLES,
     "gpt-5.6-sol": _TEXT_ROLES,
     "gpt-5.5": _TEXT_ROLES,
     "gpt-5.5-2026-04-23": _TEXT_ROLES,

@@ -74,6 +74,18 @@ OPENAI_GPT_5_6_LUNA_PRICING: dict[str, float] = {
     "output_above_threshold": 1.80,
 }
 
+OPENAI_GPT_6_1_SOL_PRICING: dict[str, float] = {
+    "input_uncached": 2.00,
+    "input_cached": 0.10,
+    "input_cache_write": 2.50,
+    "output": 10.00,
+    "prompt_tier_threshold_tokens": 272_000,
+    "input_uncached_above_threshold": 4.00,
+    "input_cached_above_threshold": 0.20,
+    "input_cache_write_above_threshold": 5.00,
+    "output_above_threshold": 15.00,
+}
+
 OPENAI_GPT_6_ASTRA_PRICING: dict[str, float] = {
     "input_uncached": 10.00,
     "input_cached": 1.00,
@@ -92,6 +104,13 @@ ANTHROPIC_OPUS_PRICING: dict[str, float] = {
     "input_cache_write": 6.25,
     "input_cache_write_1h": 10.0,
     "output": 25.0,
+}
+ANTHROPIC_OPUS_5_5_PRICING: dict[str, float] = {
+    "input_uncached": 4.0,
+    "input_cached": 0.2,
+    "input_cache_write": 5.0,
+    "input_cache_write_1h": 8.0,
+    "output": 20.0,
 }
 ANTHROPIC_SONNET_PRICING: dict[str, float] = {
     "input_uncached": 3.0,
@@ -430,6 +449,7 @@ def pricing_for_provider_model(provider: str, model_id: str) -> dict[str, float]
     model = str(model_id).strip()
     if provider_norm.value == "anthropic":
         return {
+            "claude-opus-5-5": ANTHROPIC_OPUS_5_5_PRICING,
             "claude-opus-4-8": ANTHROPIC_OPUS_PRICING,
             "claude-opus-4-7": ANTHROPIC_OPUS_PRICING,
             "claude-opus-4-6": ANTHROPIC_OPUS_PRICING,
@@ -449,6 +469,7 @@ def pricing_for_provider_model(provider: str, model_id: str) -> dict[str, float]
         "gpt-5.6-sol": OPENAI_GPT_5_6_SOL_PRICING,
         "gpt-5.6-terra": OPENAI_GPT_5_6_TERRA_PRICING,
         "gpt-5.6-luna": OPENAI_GPT_5_6_LUNA_PRICING,
+        "gpt-6.1-sol": OPENAI_GPT_6_1_SOL_PRICING,
         "gpt-6-astra": OPENAI_GPT_6_ASTRA_PRICING,
     }.get(model)
 

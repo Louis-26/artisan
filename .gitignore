@@ -33,3 +33,8 @@ viewer/web/dist/
 .zshrc
 .gitconfig
 .ripgreprc
+
+
+/visualization/
+/logs
+/git_script/
